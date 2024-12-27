@@ -1,0 +1,14 @@
+.hidden {
+    display: none;
+}
+
+.visible {
+    visibility: visible;
+}
+
+.control-flex-center {
+    display: flex; 
+    flex-direction: 
+    column; align-items: 
+    center; gap: 10px;
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go in GO!</title>
+    <link rel="stylesheet" href="go.css">
+    <script type="text/javascript" src="go.js"></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js" defer></script>
+</head>
+<body>
+    <div class="control-flex-center">
+        <div id="join_controls" class="visible">
+            <input type="text" placeholder="Match ID" size="40" id="session_id"/>
+            <input type="checkbox" id="session_online" name="Online" checked="true" checked="true"/>
+            <label for="session_online">Online</label>
+            <button onclick="login()">Play!</button>
+        </div>
+        <div id="session_controls" class="hidden">
+            <span id="session_id_span"></span>
+            <button onclick="copySessionId()"><img src="copyicon.svg" alt="copy icon" width=15/></button>
+            <span id="session_side_span" style="font-weight: bold; margin-left: 5px; margin-right: 5px;"></span>
+            <button onclick="logout()">Exit Session</button>
+        </div>
+        <canvas id="canvas" width="600" height="600" style="border: 1px solid;"/>
+    </div>
+</body>
+</html>
