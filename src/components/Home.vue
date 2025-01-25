@@ -14,7 +14,7 @@
     const sessionId = ref('');
     const online = ref(true);
     const blackSide = ref(false);
-    const gameSize = 19;
+    const gameSize = 5;
 
     function checkSocket() {
         if (socket == null || socket.CLOSED) {

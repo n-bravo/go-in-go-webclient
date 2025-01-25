@@ -17,30 +17,33 @@
         let lines = new createjs.Graphics();
         lines.setStrokeStyle(2, "square").beginStroke("black")
         let point, clickPoint;
+        const gsp1 = gameSize.value + 1;
+        const gsp1f = gameSize.value/gsp1;
         for (let i = 0; i < gameSize.value; i++) {
-            lines.moveTo(w/20*(i+1), h/20)
-            lines.lineTo(w/20*(i+1), h*19/20)
-            lines.moveTo(w/20, w/20*(i+1))
-            lines.lineTo(w*19/20, h/20*(i+1))
+            lines.moveTo(w/gsp1*(i+1), h/gsp1)
+            lines.lineTo(w/gsp1*(i+1), h*gsp1f)
+            lines.moveTo(w/gsp1, w/gsp1*(i+1))
+            lines.lineTo(w*gsp1f, h/gsp1*(i+1))
         }
         stage.addChild(new createjs.Shape(lines))
+        const stoneSize = 0.4*w/gameSize.value;
         for (let i = 0; i < gameSize.value; i++) {
             for (let j = 0; j < gameSize.value; j++) {
                 point = new createjs.Shape()
                 points.set('' + i + j, point.graphics.beginFill("rgb(0, 0, 0, 0%)").command as {style: string});
-                point.graphics.drawCircle(w/20*(i+1), h/20*(j+1), 15)
-                clickPoint = new createjs.Shape()
-                clickPoint.graphics.beginFill("#000").drawCircle(w/20*(i+1), h/20*(j+1), 15)
-                point.hitArea = clickPoint
-                point.addEventListener("click", (_) => play(i, j))
-                stage.addChild(point)
+                point.graphics.drawCircle(w/gsp1*(i+1), h/gsp1*(j+1), stoneSize);
+                clickPoint = new createjs.Shape();
+                clickPoint.graphics.beginFill("#000").drawCircle(w/gsp1*(i+1), h/gsp1*(j+1), stoneSize);
+                point.hitArea = clickPoint;
+                point.addEventListener("click", (_) => play(i, j));
+                stage.addChild(point);
             }
         }
         stage.update()
     }
 
     function play(x: number, y: number) {
-        emit('play', x, y)
+        emit('play', x, y);
     }
 
     function update(status: String) {
