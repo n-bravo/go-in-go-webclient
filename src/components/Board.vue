@@ -1,11 +1,24 @@
 <script setup lang="ts">
+    import { onMounted } from 'vue';
+    import { useRoomStore } from '@/stores/useRoomStore';
+    import WebSocketService from "@/lib/ws";
     import * as createjs from 'createjs-module';
 
-    const gameSize = defineModel<number>('gameSize', {type: Number, required: true})
-    const emit = defineEmits(['play'])
+    const roomStore = useRoomStore();
 
     var stage: createjs.Stage;
     var points: Map<string, {style: string}> = new Map<string, {style: string}>();
+
+    onMounted(() => {
+        draw();
+        WebSocketService.addListener((data) => {
+            const payload = JSON.parse(data);
+            if (payload.bStatus && payload.bStatus.length > 0) {
+                roomStore.bStatus = payload.bStatus;
+                updatePoints();
+            }
+        })
+    })
 
     function draw(){
         stage = new createjs.Stage("boardCanvas");
@@ -17,18 +30,18 @@
         let lines = new createjs.Graphics();
         lines.setStrokeStyle(2, "square").beginStroke("black")
         let point, clickPoint;
-        const gsp1 = gameSize.value + 1;
-        const gsp1f = gameSize.value/gsp1;
-        for (let i = 0; i < gameSize.value; i++) {
+        const gsp1 = roomStore.boardSize + 1;
+        const gsp1f = roomStore.boardSize/gsp1;
+        for (let i = 0; i < roomStore.boardSize; i++) {
             lines.moveTo(w/gsp1*(i+1), h/gsp1)
             lines.lineTo(w/gsp1*(i+1), h*gsp1f)
             lines.moveTo(w/gsp1, w/gsp1*(i+1))
             lines.lineTo(w*gsp1f, h/gsp1*(i+1))
         }
         stage.addChild(new createjs.Shape(lines))
-        const stoneSize = 0.4*w/gameSize.value;
-        for (let i = 0; i < gameSize.value; i++) {
-            for (let j = 0; j < gameSize.value; j++) {
+        const stoneSize = 0.4*w/roomStore.boardSize;
+        for (let i = 0; i < roomStore.boardSize; i++) {
+            for (let j = 0; j < roomStore.boardSize; j++) {
                 point = new createjs.Shape()
                 points.set('' + i + j, point.graphics.beginFill("rgb(0, 0, 0, 0%)").command as {style: string});
                 point.graphics.drawCircle(w/gsp1*(i+1), h/gsp1*(j+1), stoneSize);
@@ -39,17 +52,22 @@
                 stage.addChild(point);
             }
         }
-        stage.update()
+        if (roomStore.bStatus.length > 0) {
+            updatePoints();
+        } else {
+            stage.update()
+        }
     }
 
     function play(x: number, y: number) {
-        emit('play', x, y);
+        WebSocketService.sendMessage({x: x, y: y, closeConn: false});
     }
 
-    function update(status: String) {
-        for (let row = 0; row < gameSize.value; row++) {
-            for (let col = 0; col < gameSize.value; col++) {
-                setPointStatus(row, col, status.charAt(gameSize.value * row + col))
+    function updatePoints() {
+        const status = roomStore.bStatus;
+        for (let row = 0; row < roomStore.boardSize; row++) {
+            for (let col = 0; col < roomStore.boardSize; col++) {
+                setPointStatus(row, col, status.charAt(roomStore.boardSize * row + col))
             }
         }
         stage.update()
@@ -75,9 +93,7 @@
     }
 
     defineExpose({
-        clear,
-        update,
-        draw
+        clear
     })
 </script>
 
