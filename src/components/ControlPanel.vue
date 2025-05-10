@@ -4,6 +4,8 @@
     import { storeToRefs } from 'pinia';
     import WebSocketService from "@/lib/ws"
     import { onMounted } from 'vue';
+    import { Copy, Circle } from 'lucide-vue-next';
+    import { Button } from '@/components/ui/button';
 
     const emit = defineEmits(['logout']);
     const roomStore = useRoomStore();
@@ -29,17 +31,24 @@
 </script>
 
 <template>
-    <div class="flex flex-row justify-center">
-        <div class="self-center">
+    <div class="flex flex-col w-full gap-3 py-4 pr-2">
             <div v-if="online">
-                <span>Session {{id}}</span>
-                <button @click="copyIdToClipboard">Copy</button>
-                <span class="font-bold">{{ blackSide ? "Black" : "White"}} side</span>
+                <div class="flex flex-col">
+                    <span><b>Session ID</b></span>
+                    <div class="flex flex-row align-middle">
+                        <span class="text-xs">{{id}}</span>
+                        <button @click="copyIdToClipboard"><Copy :size="20"></Copy></button>
+                    </div>
+                </div>
+                <div class="flex flex-row gap-1">
+                    <Circle v-if="blackSide" fill='black'></Circle>
+                    <Circle v-else fill='white'></Circle>
+                    <span class="font-bold">{{ blackSide ? "Black" : "White"}} side</span>
+                </div>
             </div>
             <div v-else>
                 <span>Offline Session</span>
             </div>
-            <button @click="logout">Logout</button>
-        </div>
+            <Button @click="logout">Logout</button>
     </div>
 </template>
